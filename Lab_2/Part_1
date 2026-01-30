@@ -1,0 +1,10 @@
+part1 = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096]
+
+result = 1
+
+for num in part1:
+    result *= num
+
+print("Part 1 result:", result)
+
+# the answer is: 302,231,454,903,657,293,676,544

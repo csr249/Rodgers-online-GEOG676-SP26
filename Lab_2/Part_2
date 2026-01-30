@@ -1,0 +1,10 @@
+part2 = [-1, 23, 483, 8573, -13847, -381569, 1652337, 718522177]
+
+total = 0 
+
+for num in part2:
+    total += num
+
+print("Part 2 result:", total)
+
+# the answer is: 719,788,176

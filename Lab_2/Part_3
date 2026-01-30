@@ -1,0 +1,11 @@
+part3 = [146, 875, 911, 83, 81, 439, 44, 5, 46, 76, 61, 68, 1, 14, 38, 26, 21]
+
+even_sum = 0
+
+for num in part3:
+    if num % 2 == 0:
+        even_sum += num
+
+print("Part 3 result (even numbers only):", even_sum)
+
+# the answer is: 458

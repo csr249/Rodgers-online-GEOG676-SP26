@@ -10,7 +10,12 @@ Task:
 - Answer all parts using whichever loop you see fit
 - Upload your code to Github
 
-# Deliverables
+## Deliverables
 
 - Screen grab of answers
 - Link to Github page that contains the Python code
+
+### Files
+- Part_1: Multiplies all values in a list
+- Part_2: Adds all values in a list
+- Part_3: Adds only even values in a list
