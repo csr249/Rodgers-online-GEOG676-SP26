@@ -1,0 +1,90 @@
+import math
+from pathlib import Path
+
+class Shape:
+    def area(self) -> float:
+        raise NotImplementedError("Subclasses must implement area()")
+
+    def __repr__(self) -> str:
+        return self.__class__.__name__
+
+class Rectangle(Shape):
+    def __init__(self, length: float, width: float):
+        self.length = float(length)
+        self.width = float(width)
+
+    def area(self) -> float:
+        return self.length * self.width
+
+    def __repr__(self) -> str:
+        return f"Rectangle(length={self.length}, width={self.width})"
+
+class Circle(Shape):
+    def __init__(self, radius: float):
+        self.radius = float(radius)
+
+    def area(self) -> float:
+        return math.pi * (self.radius ** 2)
+
+    def __repr__(self) -> str:
+        return f"Circle(radius={self.radius})"
+
+class Triangle(Shape):
+    def __init__(self, base: float, height: float):
+        self.base = float(base)
+        self.height = float(height)
+
+    def area(self) -> float:
+        return 0.5 * self.base * self.height
+
+    def __repr__(self) -> str:
+        return f"Triangle(base={self.base}, height={self.height})"
+
+def shape_from_line(line: str) -> Shape:
+    parts = [p.strip() for p in line.split(",") if p.strip()]
+
+    if not parts:
+        raise ValueError("Empty line")
+
+    shape_name = parts[0].lower()
+
+    if shape_name == "rectangle":
+        if len(parts) != 3:
+            raise ValueError(f"Rectangle needs 2 values, got: {parts}")
+        return Rectangle(parts[1], parts[2])
+
+    if shape_name == "circle":
+        if len(parts) != 2:
+            raise ValueError(f"Circle needs 1 value, got: {parts}")
+        return Circle(parts[1])
+
+    if shape_name == "triangle":
+        if len(parts) != 3:
+            raise ValueError(f"Triangle needs 2 values, got: {parts}")
+        return Triangle(parts[1], parts[2])
+
+    raise ValueError(f"Unknown shape type: {parts[0]}")
+
+def main():
+    here = Path(__file__).parent
+    data_path = here / "shape.txt"
+
+    shapes: list[Shape] = []
+
+    with open(data_path, "r", encoding="utf-8") as f:
+        for line_num, raw in enumerate(f, start=1):
+            line = raw.strip()
+            if not line:
+                continue  
+
+            try:
+                shapes.append(shape_from_line(line))
+            except Exception as e:
+                print(f"[Line {line_num}] Skipping bad line: {line!r} -> {e}")
+
+    print("Areas:")
+    for s in shapes:
+        print(f"{s} -> area = {s.area():.4f}")
+        #GO Patriots
+if __name__ == "__main__":
+    main()

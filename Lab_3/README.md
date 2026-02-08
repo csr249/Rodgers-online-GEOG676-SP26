@@ -18,3 +18,9 @@ Task:
 
 - Link to your GitHub page that contains the Python code
 - Screenshot of Executed Code Printout
+
+# Executed Code Output
+
+Below is a screenshot of the executed Python code showing the calculated areas for each shape:
+
+![Executed Output](Results.jpg)
