@@ -19,3 +19,18 @@ Task:
 
 - Link to GitHub page that contains the Python code, GDB, and CSV resulting table
 - Screenshot of the executed code
+
+### Executed Output
+
+#### Script Execution
+![Executed Script](Lab_4_Results.jpg)
+
+#### Intersect Table
+![Executed Script](Lab_4_intersect_table.jpg)
+
+#### ArcPro Verification
+![Executed Output](Lab_4_Output_ArcPro.jpg)
+
+#### Outputs
+- Lab4_Output.gdb
+- garage_structure_intersect.csv

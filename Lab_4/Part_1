@@ -1,0 +1,106 @@
+import arcpy
+import os
+
+arcpy.env.overwriteOutput = True
+
+Here = os.path.dirname(__file__)
+
+Garage_CSV = os.path.join(Here, "garages.csv")
+Campus_GDB = os.path.join(Here, "Campus.gdb")
+Structures = os.path.join(Campus_GDB, "Structures")
+
+Out_GDB_Name = "Lab4_Output.gdb"
+Out_GDB = os.path.join(Here, Out_GDB_Name)
+
+Garages_FC = os.path.join(Out_GDB, "Garages")
+Structures_Copy = os.path.join(Out_GDB, "Structures_Copy")
+Garages_Buffer = os.path.join(Out_GDB, "Garages_Buffer")
+Intersect_FC = os.path.join(Out_GDB, "Garage_Structures_Intersect")
+
+Out_CSV = os.path.join(Here, "garage_structure_intersect.csv")
+
+
+def main():
+    #1 Buffer distance in meters
+    buffer_m = float(input("Enter buffer distance in meters (e.g., 150): ").strip())
+
+    #2 Develop output GDB
+    if not arcpy.Exists(Out_GDB):
+        arcpy.management.CreateFileGDB(Here, Out_GDB_Name)
+        print(f"Created geodatabase: {Out_GDB}")
+    else:
+        print(f"Using existing geodatabase: {Out_GDB}")
+
+    #3 Copy Structures into new .GDB
+    if not arcpy.Exists(Structures_Copy):
+        arcpy.management.CopyFeatures(Structures, Structures_Copy)
+        print("Copied Structures into output geodatabase.")
+    else:
+        print("Structures copy already exists.")
+
+    #4 Make garage points from the CSV
+    fields = [f.name for f in arcpy.ListFields(Garage_CSV)]
+    print("CSV fields:", fields)
+
+    possible_x = ["X", "x", "Lon", "lon", "Longitude", "longitude"]
+    possible_y = ["Y", "y", "Lat", "lat", "Latitude", "latitude"]
+
+    x_field = next((f for f in fields if f in possible_x), None)
+    y_field = next((f for f in fields if f in possible_y), None)
+
+    if x_field is None or y_field is None:
+        raise ValueError(
+            f"Could not detect X/Y fields. CSV has {fields}. "
+            f"Rename headers to X and Y (or tell me the header names)."
+        )
+
+    #5 Devlope XY Event layer and copy to feature class
+    wgs84 = arcpy.SpatialReference(4326)
+    xy_layer = "garages_xy_layer"
+
+    if arcpy.Exists(Garages_FC):
+        arcpy.management.Delete(Garages_FC)
+
+    arcpy.management.MakeXYEventLayer(Garage_CSV, x_field, y_field, xy_layer, wgs84)
+    arcpy.management.CopyFeatures(xy_layer, Garages_FC)
+    print("Created garage points feature class in output GDB.")
+
+    #6 Project garage points
+    structures_sr = arcpy.Describe(Structures_Copy).spatialReference
+    garages_proj = os.path.join(Out_GDB, "Garages_Proj")
+
+    if arcpy.Exists(garages_proj):
+        arcpy.management.Delete(garages_proj)
+
+    arcpy.management.Project(Garages_FC, garages_proj, structures_sr)
+    print("Projected garages to match Structures spatial reference.")
+
+    #7 Buffer garages
+    if arcpy.Exists(Garages_Buffer):
+        arcpy.management.Delete(Garages_Buffer)
+
+    arcpy.analysis.Buffer(garages_proj, Garages_Buffer, f"{buffer_m} Meters")
+    print("Buffered garages.")
+
+    #8 Intersect Structures with garage buffers
+    if arcpy.Exists(Intersect_FC):
+        arcpy.management.Delete(Intersect_FC)
+
+    arcpy.analysis.Intersect([Structures_Copy, Garages_Buffer], Intersect_FC)
+    print("Intersect complete.")
+
+    #9 Export intersect attribute table to CSV
+    if os.path.exists(Out_CSV):
+        os.remove(Out_CSV)
+
+    arcpy.conversion.TableToTable(Intersect_FC, Here, os.path.basename(Out_CSV))
+    print(f"Exported intersect table to CSV: {Out_CSV}")
+
+    #10 Print row count
+    count = int(arcpy.management.GetCount(Intersect_FC)[0])
+    print(f"Intersect row count: {count}")
+    print("DONE")
+
+
+if __name__ == "__main__":
+    main()
