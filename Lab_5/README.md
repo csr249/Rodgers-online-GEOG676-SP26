@@ -16,3 +16,14 @@ Task:
 
 - Link to your GitHub page that contains the Python code
 - Screenshot of the tool you developed displayed in ArcGIS Pro
+
+### ArcPro Toolbox
+![Executed Output](Pyt_Inputs.jpg)
+
+### ArcPro Verification
+![Executed Output](Lab 5 Output_map.jpg)
+
+#### Outputs
+- Lab5_Output.gdb
+- garage_structure_intersect.csv
+- Lab5.pyt
